@@ -15,13 +15,61 @@ HotChat.prototype = {
     init: function() {
         var that = this;
         //建立到服务器的socket连接
-        that.socket = io.connect();
+        this.socket = io.connect();
         //监听socket的connect事件，此事件表示连接已建立
-        that.socket.on('connect', function() {
+        this.socket.on('connect', function() {
             // 连接到服务器后，显示昵称输入框
             $('info').textContent = 'get yourself a nickname :)';
             $('nickWrapper').style.display = 'block';
             $('nicknameInput').focus();
-        })
+        });
+        this.socket.on('nickExisted', function() {
+            $('info').textContent = 'nickname is taken choose another pls';
+        });
+        this.socket.on('loginSuccess', function() {
+            document.title = 'hotchat |' + $('nicknameInput').value;
+            $('loginWrapper').style.display = 'none';
+            $('sendMessage').focus();
+        });
+        this.socket.on('system', function(nickName, userCount, type) {
+            //判断用户是连接还是离开以显示不同的信息
+            if (nickName) {
+                var msg = nickName + (type == 'login' ? ' joined' : ' left');
+                that._displayNwMsg('system', msg, 'red')
+                $('status').textContent = userCount + (userCount > 1 ? 'users' : 'user') + ' online';
+            }
+        });
+        this.socket.on('newMsg', function(user, msg, color) {
+            that._displayNwMsg(user, msg, color)
+        });
+        $('sendBtn').addEventListener('click', function() {
+            var msg = $('sendMessage').value;
+            $('sendMessage').value = "";
+            $('sendMessage').focus();
+            if (msg.trim().length != 0) {
+                that.socket.emit('postMsg', msg);
+                that._displayNwMsg('me', msg);
+            }
+        }, false)
+        $('loginBtn').addEventListener('click', function() {
+            var nickName = $('nicknameInput').value;
+            //检查昵称输入框是否为空
+            if (nickName.trim().length != 0) {
+                //不为空，则发起一个login事件并将输入的昵称发送到服务器
+                that.socket.emit('login', nickName);
+            } else {
+                //否则输入框获得焦点
+                $('nicknameInput').focus();
+            }
+        }, false);
+    },
+    _displayNwMsg: function(user, msg, color) {
+        var container = $('content'),
+            msgToDisplay = document.createElement('p'),
+            date = new Date().toTimeString().substr(0, 8);
+        msgToDisplay.style.color = color || '#000';
+        msgToDisplay.innerHTML = user + "<span class='timespan'>(" + date + ")：</span>" + msg;
+        container.appendChild(msgToDisplay);
+        container.scrollTop = container.scrollHeight;
     }
 }
