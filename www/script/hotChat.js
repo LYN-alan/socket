@@ -42,6 +42,9 @@ HotChat.prototype = {
         this.socket.on('newMsg', function(user, msg, color) {
             that._displayNwMsg(user, msg, color)
         });
+        this.socket.on('newImg', function(user, imgData) {
+            that._displayNwImg(user, imgData);
+        })
         $('sendBtn').addEventListener('click', function() {
             var msg = $('sendMessage').value;
             $('sendMessage').value = "";
@@ -50,7 +53,24 @@ HotChat.prototype = {
                 that.socket.emit('postMsg', msg);
                 that._displayNwMsg('me', msg);
             }
-        }, false)
+        }, false);
+        $('imgFile').addEventListener('change', function() {
+            if (this.files.length != 0) {
+                var File = this.files[0];
+                var reader = new FileReader();
+                if (!reader) {
+                    that._displayNwMsg('system', '!your browser doesn\'t support fileReader', 'red');
+                    this.value = "";
+                    return
+                }
+                reader.onload = function(e) {
+                    this.value = "";
+                    that.socket.emit('postImg', e.target.result);
+                    that._displayNwImg('me', e.target.result);
+                }
+                reader.readAsDataURL(File);
+            }
+        })
         $('loginBtn').addEventListener('click', function() {
             var nickName = $('nicknameInput').value;
             //检查昵称输入框是否为空
@@ -71,5 +91,13 @@ HotChat.prototype = {
         msgToDisplay.innerHTML = user + "<span class='timespan'>(" + date + ")：</span>" + msg;
         container.appendChild(msgToDisplay);
         container.scrollTop = container.scrollHeight;
+    },
+    _displayNwImg: function(user, imgData) {
+        var msgToDisplay = document.createElement('p'),
+            date = new Date().toTimeString().substr(0, 8);
+        msgToDisplay.innerHTML = user + "<span class='timespan'>(" + date + "): </span> <br/><a href='" + imgData + "' target='_blank'>" +
+            "<img src='" + imgData + "'/></a>"
+        $('content').appendChild(msgToDisplay);
+        $('content').scrollTop = $('content').scrollHeight;
     }
 }

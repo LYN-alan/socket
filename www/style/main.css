@@ -19,8 +19,41 @@
     padding-bottom: 20px;
 }
 
+.content img {
+    max-width: 50%;
+}
+
 .tool {
     height: 40px;
+    display: flex;
+    justify-content: flex-start;
+    list-style: none;
+}
+
+.tool li {
+    margin: 0 10px;
+    width: 40px;
+    line-height: 36px;
+}
+
+.tool li:last-child {
+    position: relative;
+}
+
+.tool li:last-child input[type='file'] {
+    width: 100%;
+    display: inline-block;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.textColor {
+    width: 100%;
+    height: 20px;
+    box-sizing: border-box;
 }
 
 .footer textarea {

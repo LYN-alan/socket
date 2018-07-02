@@ -22,7 +22,10 @@ io.sockets.on('connection', function(socket) {
         }
     });
     socket.on('postMsg', function(msg, color) {
-        socket.broadcast.emit('newMsg', socket.nickname, msg, color)
+        socket.broadcast.emit('newMsg', socket.nickname, msg, color);
+    });
+    socket.on('postImg', function(imgData) {
+        socket.broadcast.emit('newImg', socket.nickname, imgData);
     });
     //断开连接的事件
     socket.on('disconnect', function() {
