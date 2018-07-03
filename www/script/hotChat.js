@@ -49,9 +49,10 @@ HotChat.prototype = {
             var msg = $('sendMessage').value;
             $('sendMessage').value = "";
             $('sendMessage').focus();
+            var color = $('textColor').value;
             if (msg.trim().length != 0) {
-                that.socket.emit('postMsg', msg);
-                that._displayNwMsg('me', msg);
+                that.socket.emit('postMsg', msg, color);
+                that._displayNwMsg('me', msg, color);
             }
         }, false);
         $('imgFile').addEventListener('change', function() {
@@ -90,14 +91,15 @@ HotChat.prototype = {
         msgToDisplay.style.color = color || '#000';
         msgToDisplay.innerHTML = user + "<span class='timespan'>(" + date + ")：</span>" + msg;
         container.appendChild(msgToDisplay);
-        container.scrollTop = container.scrollHeight;
+        container.scrollTop = container.scrollHeight - msgToDisplay.offsetHeight;
     },
     _displayNwImg: function(user, imgData) {
         var msgToDisplay = document.createElement('p'),
+            container = document.getElementById('content'),
             date = new Date().toTimeString().substr(0, 8);
         msgToDisplay.innerHTML = user + "<span class='timespan'>(" + date + "): </span> <br/><a href='" + imgData + "' target='_blank'>" +
-            "<img src='" + imgData + "'/></a>"
-        $('content').appendChild(msgToDisplay);
-        $('content').scrollTop = $('content').scrollHeight;
+            "<img src='" + imgData + "'/></a>";
+        container.appendChild(msgToDisplay);
+        container.scrollTop = container.scrollHeight - msgToDisplay.offsetHeight;
     }
 }
