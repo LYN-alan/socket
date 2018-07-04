@@ -59,6 +59,9 @@
 .footer textarea {
     width: 450px;
     height: 100px;
+    outline: 0;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .footer .send {

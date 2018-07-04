@@ -55,6 +55,18 @@ HotChat.prototype = {
                 that._displayNwMsg('me', msg, color);
             }
         }, false);
+        $('sendMessage').addEventListener('keyup', function(e) {
+            if (e.keyCode == 13) {
+                var msg = $('sendMessage').value;
+                $('sendMessage').value = "";
+                $('sendMessage').focus();
+                var color = $('textColor').value;
+                if (msg.trim().length != 0) {
+                    that.socket.emit('postMsg', msg, color);
+                    that._displayNwMsg('me', msg, color);
+                }
+            }
+        }, false);
         $('imgFile').addEventListener('change', function() {
             if (this.files.length != 0) {
                 var File = this.files[0];
@@ -81,6 +93,19 @@ HotChat.prototype = {
             } else {
                 //否则输入框获得焦点
                 $('nicknameInput').focus();
+            }
+        }, false);
+        $('nicknameInput').addEventListener('keyup', function(e) {
+            if (e.keyCode == 13) {
+                var nickName = $('nicknameInput').value;
+                //检查昵称输入框是否为空
+                if (nickName.trim().length != 0) {
+                    //不为空，则发起一个login事件并将输入的昵称发送到服务器
+                    that.socket.emit('login', nickName);
+                } else {
+                    //否则输入框获得焦点
+                    $('nicknameInput').focus();
+                }
             }
         }, false);
     },
