@@ -73,15 +73,14 @@ HotChat.prototype = {
                 var reader = new FileReader();
                 if (!reader) {
                     that._displayNwMsg('system', '!your browser doesn\'t support fileReader', 'red');
-                    this.value = "";
                     return
                 }
                 reader.onload = function(e) {
-                    this.value = "";
                     that.socket.emit('postImg', e.target.result);
                     that._displayNwImg('me', e.target.result);
                 }
                 reader.readAsDataURL(File);
+                this.value = "";
             }
         })
         $('loginBtn').addEventListener('click', function() {
@@ -116,7 +115,7 @@ HotChat.prototype = {
         msgToDisplay.style.color = color || '#000';
         msgToDisplay.innerHTML = user + "<span class='timespan'>(" + date + ")：</span>" + msg;
         container.appendChild(msgToDisplay);
-        container.scrollTop = container.scrollHeight - msgToDisplay.offsetHeight;
+        container.scrollTop = container.scrollHeight;
     },
     _displayNwImg: function(user, imgData) {
         var msgToDisplay = document.createElement('p'),
@@ -125,6 +124,8 @@ HotChat.prototype = {
         msgToDisplay.innerHTML = user + "<span class='timespan'>(" + date + "): </span> <br/><a href='" + imgData + "' target='_blank'>" +
             "<img src='" + imgData + "'/></a>";
         container.appendChild(msgToDisplay);
-        container.scrollTop = container.scrollHeight - msgToDisplay.offsetHeight;
+        setTimeout(function() {
+            container.scrollTop = container.scrollHeight;
+        }, 1)
     }
 }
